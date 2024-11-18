@@ -71,6 +71,25 @@ app.get('/tablets/:id', async (req, res) => {
   }
 });
 
+app.put("/tablets/:id", async (req, res) => {
+  try {
+    const tabletId = parseInt(req.params.id);
+    const { Nev, opRendszer, procOrajel, procMagok, kijelzoMeret, kijelzoFelbontas, RAM, leiras, ar } = req.body;
+    const [result] = await db.query(
+      "UPDATE tablets SET Nev = ?, opRendszer = ?, procOrajel = ?, procMagok = ?, kijelzoMeret = ?, kijelzoFelbontas = ?, RAM = ?, leiras = ?, ar = ? WHERE id = ?",
+      [Nev, opRendszer, procOrajel, procMagok, kijelzoMeret, kijelzoFelbontas, RAM, leiras, ar, tabletId]
+    );
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: "Tablet not found" });
+    } else {
+      res.status(200).json({ message: "Tablet was successfully updated" });
+    }
+  } catch (error) {
+    console.error(`Error updating tablet: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
