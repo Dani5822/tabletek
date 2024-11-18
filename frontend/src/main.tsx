@@ -5,6 +5,7 @@ import TabletFelvetel from './components/tabletFelvetel';
 import TabletTorles from './components/tabletTorles';
 import TabletLista from './components/tabletLista';
 import Kezdolap from './components/kezdolap';
+import TabletekFullCrud from './components/tabletekfullcrud';
 
 
 const router = createBrowserRouter([
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: "/tableteklista",
     element: <TabletLista />,
+  },
+  {
+    path: "/tabletekfullcrud",
+    element: <TabletekFullCrud />,
   },
 ]);
 

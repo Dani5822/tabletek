@@ -29,22 +29,10 @@ app.get("/tablets", async (req, res) => {
 
 app.post("/tablets", async (req, res) => {
   try {
-    let postData = [req.body.title, req.body.content];
-
-    if (postData[0].length < 1) {
-      return res
-        .status(400)
-        .json({ error: "Title must have at least 1 character" });
-    }
-    if (postData[1].length < 1) {
-      return res
-        .status(400)
-        .json({ error: "Content must have at least 1 character" });
-    }
-
+    let postData = req.body;
     const [rows] = await db.query(
-      "INSERT INTO tablets (title, content) VALUES (?, ?)",
-      postData
+      "INSERT INTO `tablets` (`Nev`, `opRendszer`, `procOrajel`, `procMagok`, `kijelzoMeret`, `kijelzoFelbontas`, `RAM`, `leiras`, `ar`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
+      [postData.Nev,postData.opRendszer,postData.procOrajel,postData.procMagok,postData.kijelzoMeret,postData.kijelzoFelbontas,postData.RAM,postData.leiras,postData.ar]
     );
     res.status(200).json({ message: "Tablet was successfully added!" });
   } catch (error) {

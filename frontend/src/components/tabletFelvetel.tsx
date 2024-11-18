@@ -104,7 +104,7 @@ export default function tabletFelvetel() {
         <Form.Group controlId="formKijelzoMeret">
           <Form.Label>Kijelző Méret</Form.Label>
           <Form.Control
-            type="text"
+            type="number"
             name="kijelzoMeret"
             value={tablet.kijelzoMeret}
             onChange={handleChange}
@@ -115,7 +115,7 @@ export default function tabletFelvetel() {
         <Form.Group controlId="formKijelzoFelbontas">
           <Form.Label>Kijelző Felbontás</Form.Label>
           <Form.Control
-            type="number"
+            type="text"
             name="kijelzoFelbontas"
             value={tablet.kijelzoFelbontas}
             onChange={handleChange}
