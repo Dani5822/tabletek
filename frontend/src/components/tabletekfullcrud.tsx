@@ -22,6 +22,15 @@ export default function TabletekFullCrud() {
   const [showModal, setShowModal] = useState(false);
   const [editData, setEditData] = useState<Tablet | null>(null);
 
+  const [page, setPage] = useState(1);
+  const [maxitems, setMaxitems] = useState(2);
+  const [items, setItems] = useState<Tablet[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof Tablet;
+    direction: "asc" | "desc";
+  } | null>(null);
+
   useEffect(() => {
     fetchTablets();
   }, []);
@@ -130,6 +139,45 @@ export default function TabletekFullCrud() {
       [name]: value,
     });
   };
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const term = event.target.value.toLowerCase();
+    setSearchTerm(term);
+    const filtered = tablets.filter(
+      (tablet) =>
+        tablet.Nev.toLowerCase().includes(term) ||
+        tablet.RAM.toString().includes(term) ||
+        tablet.ar.toString().includes(term) ||
+        tablet.kijelzoFelbontas.toLocaleLowerCase().includes(term) ||
+        tablet.kijelzoMeret.toString().includes(term) ||
+        tablet.opRendszer.toLocaleLowerCase().includes(term) ||
+        tablet.procMagok.toString().includes(term) ||
+        tablet.procOrajel.toString().includes(term)
+    );
+    setItems(filtered);
+  };
+
+  const sortTablets = (key: keyof Tablet, direction: "asc" | "desc") => {
+    const sortedPhones = [...items].sort((a, b) => {
+      if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
+      if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
+      return 0;
+    });
+    setItems(sortedPhones);
+    setSortConfig({ key, direction });
+  };
+
+  function Showdata() {
+    setItems([]);
+    const startIndex = (page - 1) * maxitems;
+    const endIndex = Math.min(page * maxitems, tablets.length);
+    const newItems = tablets.slice(startIndex, endIndex);
+    setItems(newItems);
+  }
+
+  useEffect(() => {
+    Showdata();
+  }, [page, tablets, maxitems]);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -240,23 +288,225 @@ export default function TabletekFullCrud() {
             Felvétel
           </Button>
         </Form>
+        <br />
+        <form>
+          <label>
+            Keresés:
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearch}
+              placeholder="Keresés..."
+            />
+          </label>
+        </form>
+        <div>
+          <label htmlFor="megjelen" className="me-1">
+            Egy oldalon megjelenő tabletek száma:
+          </label>
+          <input
+            type="number"
+            name="megjelen"
+            id="megjelen"
+            value={maxitems}
+            onChange={(e) => {
+              setMaxitems(parseInt(e.currentTarget.value));
+            }}
+          />
+        </div>
         <Table striped bordered hover className="mt-3">
           <thead>
             <tr>
-              <th>Név</th>
-              <th>Operációs Rendszer</th>
-              <th>Processzor Órajel</th>
-              <th>Processzor Magok</th>
-              <th>Kijelző Méret</th>
-              <th>Kijelző Felbontás</th>
-              <th>RAM</th>
+            <th>
+              Név
+              <button
+                onClick={() => sortTablets("Nev", "asc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8593;
+              </button>
+              <button
+                onClick={() => sortTablets("Nev", "desc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8595;
+              </button>
+            </th>
+              <th>
+              Operációs rendszer
+              <button
+                onClick={() => sortTablets("opRendszer", "asc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8593;
+              </button>
+              <button
+                onClick={() => sortTablets("opRendszer", "desc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8595;
+              </button>
+            </th>
+              <th>
+                Processzor órajele
+              <button
+                onClick={() => sortTablets("procOrajel", "asc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8593;
+              </button>
+              <button
+                onClick={() => sortTablets("procOrajel", "desc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8595;
+              </button>
+            </th>
+              <th>
+            Processzor magok száma
+              <button
+                onClick={() => sortTablets("procMagok", "asc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8593;
+              </button>
+              <button
+                onClick={() => sortTablets("procMagok", "desc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8595;
+              </button>
+            </th>
+              <th>
+            Kijelző Méret
+              <button
+                onClick={() => sortTablets("kijelzoMeret", "asc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8593;
+              </button>
+              <button
+                onClick={() => sortTablets("kijelzoMeret", "desc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8595;
+              </button>
+            </th>
+              <th>
+            Kijelző Felbontás
+              <button
+                onClick={() => sortTablets("kijelzoFelbontas", "asc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8593;
+              </button>
+              <button
+                onClick={() => sortTablets("kijelzoFelbontas", "desc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8595;
+              </button>
+            </th>
+              <th>
+            RAM
+              <button
+                onClick={() => sortTablets("RAM", "asc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8593;
+              </button>
+              <button
+                onClick={() => sortTablets("RAM", "desc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8595;
+              </button>
+            </th>
               <th>Leírás</th>
-              <th>Ár</th>
+              <th>
+            ÁR
+              <button
+                onClick={() => sortTablets("ar", "asc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8593;
+              </button>
+              <button
+                onClick={() => sortTablets("ar", "desc")}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                &#8595;
+              </button>
+            </th>
               <th>Műveletek</th>
             </tr>
           </thead>
           <tbody>
-            {tablets.map((tablet) => (
+            {items.map((tablet) => (
               <tr key={tablet.id}>
                 <td>{tablet.Nev}</td>
                 <td>{tablet.opRendszer}</td>
@@ -275,6 +525,21 @@ export default function TabletekFullCrud() {
             ))}
           </tbody>
         </Table>
+        <div style={{width:"fit-content", margin:"auto",marginBottom:"1rem"}}>
+        <button style={{width:"fit-content"}} onClick={() => setPage((prev) => Math.max(prev - 1, 1))}>
+          Előző
+        </button>
+        <span style={{width:"fit-content"}}>Oldal: {page}</span>
+        <button style={{width:"fit-content"}}
+          onClick={() =>
+            setPage((prev) =>
+              Math.min(prev + 1, Math.ceil(tablets.length / maxitems))
+            )
+          }
+        >
+          Következő
+        </button>
+      </div>
         <Modal show={showModal} onHide={() => setShowModal(false)}>
           <Modal.Header closeButton>
             <Modal.Title>Tablet Módosítása</Modal.Title>
