@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, Button, Container, Table } from 'react-bootstrap';
+import { Form, Button, Container, Table, Modal } from 'react-bootstrap';
 import { Tablet } from "../tablet";
 import CostumeNavbar from "./navbar";
 
@@ -19,6 +19,8 @@ export default function TabletekFullCrud() {
     leiras: '',
     ar: 0,
   });
+  const [showModal, setShowModal] = useState(false);
+  const [editData, setEditData] = useState<Tablet | null>(null);
 
   useEffect(() => {
     fetchTablets();
@@ -95,22 +97,38 @@ export default function TabletekFullCrud() {
     }
   };
 
-  const handleUpdate = async (tablet: Tablet) => {
+  const handleEdit = (tablet: Tablet) => {
+    setEditData(tablet);
+    setShowModal(true);
+  };
+
+  const handleUpdate = async () => {
+    if (!editData) return;
     try {
-      const response = await fetch(`http://localhost:3000/tablets/${tablet.id}`, {
+      const response = await fetch(`http://localhost:3000/tablets/${editData.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(tablet)
+        body: JSON.stringify(editData)
       });
       if (!response.ok) {
         throw new Error(`Server responded with status ${response.status}`);
       }
+      setShowModal(false);
       fetchTablets();
     } catch (error:any) {
       setError(error.message);
     }
+  };
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!editData) return;
+    const { name, value } = e.target;
+    setEditData({
+      ...editData,
+      [name]: value,
+    });
   };
 
   if (loading) {
@@ -250,13 +268,122 @@ export default function TabletekFullCrud() {
                 <td>{tablet.leiras}</td>
                 <td>{tablet.ar}</td>
                 <td>
-                  <Button variant="warning" onClick={() => handleUpdate(tablet)}>Módosítás</Button>
+                  <Button variant="warning" onClick={() => handleEdit(tablet)}>Módosítás</Button>
                   <Button variant="danger" onClick={() => handleDelete(tablet.id)}>Törlés</Button>
                 </td>
               </tr>
             ))}
           </tbody>
         </Table>
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Tablet Módosítása</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {editData && (
+              <Form>
+                <Form.Group controlId="formEditNev">
+                  <Form.Label>Név</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="Nev"
+                    value={editData.Nev}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="formEditOpRendszer">
+                  <Form.Label>Operációs Rendszer</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="opRendszer"
+                    value={editData.opRendszer}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="formEditProcOrajel">
+                  <Form.Label>Processzor Órajel</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="procOrajel"
+                    value={editData.procOrajel}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="formEditProcMagok">
+                  <Form.Label>Processzor Magok</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="procMagok"
+                    value={editData.procMagok}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="formEditKijelzoMeret">
+                  <Form.Label>Kijelző Méret</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="kijelzoMeret"
+                    value={editData.kijelzoMeret}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="formEditKijelzoFelbontas">
+                  <Form.Label>Kijelző Felbontás</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="kijelzoFelbontas"
+                    value={editData.kijelzoFelbontas}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="formEditRAM">
+                  <Form.Label>RAM</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="RAM"
+                    value={editData.RAM}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="formEditLeiras">
+                  <Form.Label>Leírás</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="leiras"
+                    value={editData.leiras}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="formEditAr">
+                  <Form.Label>Ár</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="ar"
+                    value={editData.ar}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </Form.Group>
+              </Form>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              Mégse
+            </Button>
+            <Button variant="primary" onClick={handleUpdate}>
+              Mentés
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </Container>
     </>
   );
